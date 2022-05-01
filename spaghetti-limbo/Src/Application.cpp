@@ -58,6 +58,14 @@ Application::Application()
 	if (!glfwInit())
 		std::cout << "GLFW initialization failed!" << std::endl;
 
+
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+
+	glfwWindowHint(GLFW_RESIZABLE, 0);
+
+
 	// WINDOW CREATION
 	m_Window = glfwCreateWindow(m_Width, m_Height, m_Title.c_str(), nullptr, nullptr);
 	if (!m_Window)
@@ -67,6 +75,9 @@ Application::Application()
 	glfwMakeContextCurrent(m_Window);
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 		std::cout << "GLAD initialization failed!" << std::endl;
+
+	std::cout << glGetString(GL_VERSION) << std::endl
+		<< glGetString(GL_RENDERER) << std::endl;
 }
 
 Application::~Application()
