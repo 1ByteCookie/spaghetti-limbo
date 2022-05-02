@@ -2,21 +2,26 @@
 #include <memory>
 #include <iostream>
 #include "Shader.hpp"
+#include "Texture.hpp"
 
 Application Application::Instance;
 
 int Application::OnStart()
 {
+	glEnable(GL_CULL_FACE);
+
 	float VertexData[] =
 	{
-		 0.0f,   1.0f,
-		-1.0f,  -1.0f,
-		 1.0f,  -1.0f
+		-1.0f,   1.0f,		1.0f, 0.0f, 0.0f,	0.0f, 1.0f,
+		-1.0f,  -1.0f,		0.0f, 1.0f, 0.0f,	0.0f, 0.0f,
+		 1.0f,  -1.0f,		0.0f, 0.0f, 1.0f,	1.0f, 0.0f,
+		 1.0f,   1.0f,		0.0f, 1.0f, 0.3f,	1.0f, 1.0f
 	};
 
 	uint32_t IndexData[] =
 	{
-		0, 1, 2
+		0, 1, 2,
+		0, 2, 3
 	};
 
 
@@ -35,12 +40,26 @@ int Application::OnStart()
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(IndexData), IndexData, GL_STATIC_DRAW);
 
 
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+	glVertexAttribPointer( 0, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)0 );
+	glVertexAttribPointer( 1, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(2 * sizeof(float)) );
+	glVertexAttribPointer( 2, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(5 * sizeof(float)) );
 	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
 
+
+	TEXTURE_DESC tDescriptor = { };
+	tDescriptor.Slot			= 0;
+	tDescriptor.Target			= GL_TEXTURE_2D;
+	tDescriptor.InternalFormat	= GL_RGB;
+	tDescriptor.Format			= GL_RGB;
+	tDescriptor.BufferType		= GL_UNSIGNED_BYTE;
+	tDescriptor.Path			= "Res/Texture2D/fromReddit.jpg";
+	std::unique_ptr<Texture> Image ( Texture::LoadFromFile(tDescriptor, true) );
+	Image->Bind();
 
 	std::unique_ptr<Shader> FooShader (Shader::CreateVF( "Res/Shaders/DefaultVS.glsl", "Res/Shaders/DefaultFS.glsl" ) );
-	FooShader->Bind();
+	FooShader->Uniform1i("Diffuse", Image->Properties().Slot);
 
 	glClearColor(0.5f, 0.0f, 1.0f, 1.0f);
 	while (!glfwWindowShouldClose(m_Window))
@@ -48,7 +67,7 @@ int Application::OnStart()
 		glClear(GL_COLOR_BUFFER_BIT);
 		glfwPollEvents();
 
-		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
 		glfwSwapBuffers(m_Window);
 	}
