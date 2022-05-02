@@ -1,5 +1,7 @@
 #include "Application.hpp"
+#include <memory>
 #include <iostream>
+#include "Shader.hpp"
 
 Application Application::Instance;
 
@@ -36,6 +38,9 @@ int Application::OnStart()
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
+
+	std::unique_ptr<Shader> FooShader (Shader::CreateVF( "Res/Shaders/DefaultVS.glsl", "Res/Shaders/DefaultFS.glsl" ) );
+	FooShader->Bind();
 
 	glClearColor(0.5f, 0.0f, 1.0f, 1.0f);
 	while (!glfwWindowShouldClose(m_Window))
