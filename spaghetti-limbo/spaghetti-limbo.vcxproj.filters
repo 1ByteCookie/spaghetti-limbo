@@ -36,6 +36,9 @@
     <ClCompile Include="Src\Utils\stb_image\stb_image.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Renderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Application.hpp">
@@ -906,6 +909,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Src\Utils\stb_image\stb_image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Renderer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

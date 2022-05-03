@@ -177,6 +177,7 @@
   <ItemGroup>
     <ClCompile Include="Src\Application.cpp" />
     <ClCompile Include="Src\main.cxx" />
+    <ClCompile Include="Src\Renderer.cpp" />
     <ClCompile Include="Src\Shader.cpp" />
     <ClCompile Include="Src\Texture.cpp" />
     <ClCompile Include="Src\Utils\glad\glad.c" />
@@ -185,6 +186,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Application.hpp" />
+    <ClInclude Include="Src\Renderer.hpp" />
     <ClInclude Include="Src\Shader.hpp" />
     <ClInclude Include="Src\Texture.hpp" />
     <ClInclude Include="Src\Utils\glm\common.hpp" />

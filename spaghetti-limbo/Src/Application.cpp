@@ -3,6 +3,7 @@
 #include <iostream>
 #include "Shader.hpp"
 #include "Texture.hpp"
+#include "Renderer.hpp"
 
 Application Application::Instance;
 
@@ -64,12 +65,12 @@ int Application::OnStart()
 	glClearColor(0.5f, 0.0f, 1.0f, 1.0f);
 	while (!glfwWindowShouldClose(m_Window))
 	{
-		glClear(GL_COLOR_BUFFER_BIT);
+		Renderer::Instance.Clear(GL_COLOR_BUFFER_BIT);
 		glfwPollEvents();
 
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+		Renderer::Instance.Draw(GL_TRIANGLES, VAO, IBO, FooShader.get(), 6);
 
-		glfwSwapBuffers(m_Window);
+		Renderer::Instance.EndFrame(m_Window);
 	}
 
 	return 0;
