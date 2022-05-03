@@ -2,11 +2,21 @@
 
 Renderer Renderer::Instance;
 
-Renderer::Renderer()
-	:m_DeltaTime(0), m_CurrentFrame(0), m_PreviousFrame(0)
+void Renderer::InitPostprocess(const std::string& VS, const std::string& FS)
 {
-
+	m_Postprocess = std::make_unique<PostProcess>(VS, FS);
 }
+
+void Renderer::Present()
+{
+	m_Postprocess->Bind();
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+}
+
+Renderer::Renderer()
+	:	m_DeltaTime(0)
+	,	m_CurrentFrame(0)
+	,	m_PreviousFrame(0) { }
 
 void Renderer::Clear(unsigned int Mask)
 {

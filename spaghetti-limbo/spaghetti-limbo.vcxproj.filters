@@ -42,6 +42,9 @@
     <ClCompile Include="Src\Framebuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Postprocess.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Application.hpp">
@@ -920,6 +923,9 @@
     <ClInclude Include="Src\Framebuffer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Postprocess.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Src\Utils\glm\detail\func_common.inl">
@@ -1341,5 +1347,7 @@
     </None>
     <None Include="Res\Shaders\DefaultVS.glsl" />
     <None Include="Res\Shaders\DefaultFS.glsl" />
+    <None Include="Res\Shaders\PostprocessVS.glsl" />
+    <None Include="Res\Shaders\PostprocessFS.glsl" />
   </ItemGroup>
 </Project>

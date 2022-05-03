@@ -11,8 +11,10 @@ Application Application::Instance;
 int Application::OnStart()
 {
 	glEnable(GL_CULL_FACE);
-
 	std::unique_ptr<Framebuffer> RenderTarget( Framebuffer::FramebufferC1(0, 1 , m_Width, m_Height) );
+
+	Renderer::Instance.InitPostprocess("Res/Shaders/PostprocessVS.glsl", "Res/Shaders/PostprocessFS.glsl");
+	Renderer::Instance.Postprocess()->GetShader()->Uniform1i("Scene", RenderTarget->GetColor()->Properties().Slot);
 
 	float VertexData[] =
 	{
@@ -55,7 +57,7 @@ int Application::OnStart()
 	TEXTURE_DESC tDescriptor = { };
 	tDescriptor.Slot			= 2;
 	tDescriptor.Target			= GL_TEXTURE_2D;
-	tDescriptor.InternalFormat	= GL_RGB;
+	tDescriptor.InternalFormat	= GL_SRGB;
 	tDescriptor.Format			= GL_RGB;
 	tDescriptor.BufferType		= GL_UNSIGNED_BYTE;
 	tDescriptor.Path			= "Res/Texture2D/fromReddit.jpg";
@@ -65,7 +67,7 @@ int Application::OnStart()
 	std::unique_ptr<Shader> FooShader (Shader::CreateVF( "Res/Shaders/DefaultVS.glsl", "Res/Shaders/DefaultFS.glsl" ) );
 	FooShader->Uniform1i("Diffuse", Image->Properties().Slot);
 
-	glClearColor(0.5f, 0.0f, 1.0f, 1.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	while (!glfwWindowShouldClose(m_Window))
 	{
 		Renderer::Instance.Clear(GL_COLOR_BUFFER_BIT);
@@ -79,6 +81,7 @@ int Application::OnStart()
 		
 		RenderTarget->Unbind();
 
+		Renderer::Instance.Present();
 		Renderer::Instance.EndFrame(m_Window);
 	}
 

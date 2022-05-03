@@ -178,6 +178,7 @@
     <ClCompile Include="Src\Application.cpp" />
     <ClCompile Include="Src\Framebuffer.cpp" />
     <ClCompile Include="Src\main.cxx" />
+    <ClCompile Include="Src\Postprocess.cpp" />
     <ClCompile Include="Src\Renderer.cpp" />
     <ClCompile Include="Src\Shader.cpp" />
     <ClCompile Include="Src\Texture.cpp" />
@@ -188,6 +189,7 @@
   <ItemGroup>
     <ClInclude Include="Src\Application.hpp" />
     <ClInclude Include="Src\Framebuffer.hpp" />
+    <ClInclude Include="Src\Postprocess.hpp" />
     <ClInclude Include="Src\Renderer.hpp" />
     <ClInclude Include="Src\Shader.hpp" />
     <ClInclude Include="Src\Texture.hpp" />
@@ -482,6 +484,8 @@
   <ItemGroup>
     <None Include="Res\Shaders\DefaultFS.glsl" />
     <None Include="Res\Shaders\DefaultVS.glsl" />
+    <None Include="Res\Shaders\PostprocessFS.glsl" />
+    <None Include="Res\Shaders\PostprocessVS.glsl" />
     <None Include="Src\Utils\glm\detail\func_common.inl" />
     <None Include="Src\Utils\glm\detail\func_common_simd.inl" />
     <None Include="Src\Utils\glm\detail\func_exponential.inl" />
