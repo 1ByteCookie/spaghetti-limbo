@@ -4,12 +4,15 @@
 #include "Shader.hpp"
 #include "Texture.hpp"
 #include "Renderer.hpp"
+#include "Framebuffer.hpp"
 
 Application Application::Instance;
 
 int Application::OnStart()
 {
 	glEnable(GL_CULL_FACE);
+
+	std::unique_ptr<Framebuffer> RenderTarget( Framebuffer::FramebufferC1(0, 1 , m_Width, m_Height) );
 
 	float VertexData[] =
 	{
@@ -50,7 +53,7 @@ int Application::OnStart()
 
 
 	TEXTURE_DESC tDescriptor = { };
-	tDescriptor.Slot			= 0;
+	tDescriptor.Slot			= 2;
 	tDescriptor.Target			= GL_TEXTURE_2D;
 	tDescriptor.InternalFormat	= GL_RGB;
 	tDescriptor.Format			= GL_RGB;
@@ -67,8 +70,14 @@ int Application::OnStart()
 	{
 		Renderer::Instance.Clear(GL_COLOR_BUFFER_BIT);
 		glfwPollEvents();
+		
 
+		RenderTarget->Bind();
+
+		Renderer::Instance.Clear(GL_COLOR_BUFFER_BIT);
 		Renderer::Instance.Draw(GL_TRIANGLES, VAO, IBO, FooShader.get(), 6);
+		
+		RenderTarget->Unbind();
 
 		Renderer::Instance.EndFrame(m_Window);
 	}

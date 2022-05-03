@@ -20,6 +20,7 @@ class Texture
 {
 public:
 	static Texture* LoadFromFile(TEXTURE_DESC& Descriptor, int FlipImage);
+	static Texture* FramebufferAttachment(TEXTURE_DESC& Descriptor);
 
 	const TEXTURE_DESC& Properties() { return m_Descriptor; }
 	const GLuint GetID() { return m_ID; }

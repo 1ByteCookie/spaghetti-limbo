@@ -176,6 +176,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Src\Application.cpp" />
+    <ClCompile Include="Src\Framebuffer.cpp" />
     <ClCompile Include="Src\main.cxx" />
     <ClCompile Include="Src\Renderer.cpp" />
     <ClCompile Include="Src\Shader.cpp" />
@@ -186,6 +187,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Application.hpp" />
+    <ClInclude Include="Src\Framebuffer.hpp" />
     <ClInclude Include="Src\Renderer.hpp" />
     <ClInclude Include="Src\Shader.hpp" />
     <ClInclude Include="Src\Texture.hpp" />

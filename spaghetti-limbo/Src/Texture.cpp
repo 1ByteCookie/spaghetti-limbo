@@ -17,6 +17,13 @@ Texture* Texture::LoadFromFile(TEXTURE_DESC& Descriptor, int FlipImage)
 	return This;
 }
 
+Texture* Texture::FramebufferAttachment(TEXTURE_DESC& Descriptor)
+{
+	Texture* This = new Texture(Descriptor, nullptr);
+
+	return This;
+}
+
 Texture::~Texture()
 {
 	glDeleteTextures(1, &m_ID);
@@ -35,7 +42,8 @@ void Texture::Unbind() const
 }
 
 Texture::Texture(TEXTURE_DESC& Descriptor, unsigned char* Buffer)
-	:m_Descriptor(Descriptor), m_Channels(0)
+	:	m_Descriptor(Descriptor)
+	,	m_Channels(0)
 {
 	glActiveTexture(GL_TEXTURE0 + m_Descriptor.Slot);
 	glGenTextures(1, &m_ID);
