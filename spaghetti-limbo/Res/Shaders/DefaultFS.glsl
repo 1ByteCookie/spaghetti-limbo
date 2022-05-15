@@ -13,6 +13,5 @@ uniform sampler2D Diffuse;
 
 void main()
 {
-	Output = texture(Diffuse, Input.UV);
-	Output.rgb *= Input.Color;
+	Output = vec4(Input.Color, 1.0f);
 }
