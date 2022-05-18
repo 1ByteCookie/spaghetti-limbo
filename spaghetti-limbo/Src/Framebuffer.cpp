@@ -6,7 +6,7 @@ Framebuffer* Framebuffer::FramebufferC1(int ColorSlot, int DepthStencilSlot, int
 {
 	TEXTURE_DESC cDescriptor = { };
 	cDescriptor.Slot			= ColorSlot;
-	cDescriptor.Target			= GL_TEXTURE_2D;
+	cDescriptor.Target			= GL_TEXTURE_2D_MULTISAMPLE;
 	cDescriptor.InternalFormat	= GL_RGB;
 	cDescriptor.Format			= GL_RGB;
 	cDescriptor.BufferType		= GL_UNSIGNED_BYTE;
@@ -43,13 +43,13 @@ void Framebuffer::Unbind() const
 }
 
 Framebuffer::Framebuffer(TEXTURE_DESC& Color, TEXTURE_DESC& DepthStencil)
-	:	m_Color( Texture::FramebufferAttachment(Color) )
-	,	m_DepthStencil( Texture::FramebufferAttachment(DepthStencil) )
+	:	m_Color( Texture::FramebufferMultiSample(Color, 4) )
+	,	m_DepthStencil( Texture::FramebufferMultiSample(DepthStencil, 4) )
 {
 	glGenFramebuffers(1, &m_ID);
 	Bind();
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_Color->GetID(), 0);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, m_DepthStencil->GetID(), 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, m_Color->GetID(), 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D_MULTISAMPLE, m_DepthStencil->GetID(), 0);
 
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		std::cout << this << ": Framebuffer creation failed!" << std::endl;

@@ -24,6 +24,13 @@ Texture* Texture::FramebufferAttachment(TEXTURE_DESC& Descriptor)
 	return This;
 }
 
+Texture* Texture::FramebufferMultiSample(TEXTURE_DESC& Descriptor, uint32_t Samples)
+{
+	Texture* This = new Texture(Descriptor, Samples);
+	
+	return This;
+}
+
 Texture::~Texture()
 {
 	glDeleteTextures(1, &m_ID);
@@ -64,6 +71,18 @@ Texture::Texture(TEXTURE_DESC& Descriptor, unsigned char* Buffer)
 	glTexParameteri(m_Descriptor.Target, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(m_Descriptor.Target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(m_Descriptor.Target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	glBindTexture(m_Descriptor.Target, 0);
+}
+
+Texture::Texture(TEXTURE_DESC& Descriptor, uint32_t Samples)
+	: m_Descriptor(Descriptor)
+	, m_Channels(0)
+{
+	glActiveTexture(GL_TEXTURE0 + m_Descriptor.Slot);
+	glGenTextures(1, &m_ID);
+	glBindTexture(m_Descriptor.Target, m_ID);
+	glTexImage2DMultisample(m_Descriptor.Target, Samples, m_Descriptor.InternalFormat, m_Descriptor.Width, m_Descriptor.Height, GL_FALSE);
 
 	glBindTexture(m_Descriptor.Target, 0);
 }

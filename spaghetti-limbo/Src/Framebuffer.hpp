@@ -14,7 +14,8 @@ public:
 	void Bind() const;
 	void Unbind() const;
 
-	const auto& GetColor() const { return m_Color.get(); }
+	inline const auto& GetColor() const { return m_Color.get(); }
+	inline const auto& GetID() const { return m_ID; }
 
 private:
 	Framebuffer(TEXTURE_DESC& Color, TEXTURE_DESC& Depth);
