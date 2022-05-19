@@ -67,32 +67,67 @@ Framebuffer* Framebuffer::FBOMultisample(uint32_t ColorSlot,
 }
 
 
+void Framebuffer::Blit(Framebuffer* Source, Framebuffer* Destination)
+{
+	Source->Bind(READ);
+	if (Destination) { Destination->Bind(WRITE); }
+	else { glBindFramebuffer(WRITE, 0); }
+
+
+	glBlitFramebuffer(	0,
+						0,
+						Source->m_Color->Properties().Width,
+						Source->m_Color->Properties().Height,
+						0,
+						0,
+						Source->m_Color->Properties().Width,
+						Source->m_Color->Properties().Height,
+						GL_COLOR_BUFFER_BIT,
+						GL_LINEAR);
+
+	Source->Unbind();
+	
+	if (Destination) { Destination->Unbind(); }
+}
+
+
+void Framebuffer::ClearState()
+{
+	glBindFramebuffer(READ_WRITE, 0);
+	glBindFramebuffer(READ, 0);
+	glBindFramebuffer(WRITE, 0);
+}
+
+
 Framebuffer::~Framebuffer()
 {
 	glDeleteFramebuffers(1, &m_ID);
 }
 
 
-void Framebuffer::Bind() const
+void Framebuffer::Bind(Bindflag Flag)
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, m_ID);
+	glBindFramebuffer(Flag, m_ID);
+	m_State = Flag;
 }
 
 
-void Framebuffer::Unbind() const
+void Framebuffer::Unbind()
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindFramebuffer(m_State, 0);
+	m_State = UNBOUND;
 }
 
 
 Framebuffer::Framebuffer(Texture* Color, Texture* DepthStencil)
 	:	m_Color( Color )
 	,	m_DepthStencil( DepthStencil )
+	,	m_State(READ_WRITE)
 {
 	glGenFramebuffers(1, &m_ID);
 	
 	
-	Bind();
+	Bind(READ_WRITE);
 
 	glFramebufferTexture2D( GL_FRAMEBUFFER,
 							GL_COLOR_ATTACHMENT0,

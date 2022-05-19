@@ -74,16 +74,14 @@ int Application::OnStart()
 		glfwPollEvents();
 		
 
-		RenderTarget->Bind();
+		RenderTarget->Bind(Framebuffer::READ_WRITE);
 
 		Renderer::Instance.Clear(GL_COLOR_BUFFER_BIT);
 		Renderer::Instance.Draw(GL_TRIANGLES, VAO, IBO, FooShader.get(), 6);
 		
 		RenderTarget->Unbind();
 
-		glBindFramebuffer(GL_READ_FRAMEBUFFER, RenderTarget->GetID());
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-		glBlitFramebuffer(0, 0, m_Width, m_Height, 0, 0, m_Width, m_Height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+		Framebuffer::Blit(RenderTarget.get(), nullptr);
 
 		//Renderer::Instance.Present();
 		Renderer::Instance.EndFrame(m_Window);
