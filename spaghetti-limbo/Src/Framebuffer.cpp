@@ -43,8 +43,8 @@ void Framebuffer::Unbind() const
 }
 
 Framebuffer::Framebuffer(TEXTURE_DESC& Color, TEXTURE_DESC& DepthStencil)
-	:	m_Color( Texture::FramebufferMultiSample(Color, 4) )
-	,	m_DepthStencil( Texture::FramebufferMultiSample(DepthStencil, 4) )
+	:	m_Color( Texture::MultisampleAttachment(Color, 4) )
+	,	m_DepthStencil( Texture::MultisampleAttachment(DepthStencil, 4) )
 {
 	glGenFramebuffers(1, &m_ID);
 	Bind();

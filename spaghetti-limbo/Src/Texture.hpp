@@ -5,7 +5,7 @@
 
 struct TEXTURE_DESC
 {
-	int				Slot;
+	uint32_t		Slot;
 	GLuint			Target;
 	GLuint			InternalFormat;
 	GLuint			Format;
@@ -21,11 +21,13 @@ class Texture
 public:
 	static Texture* LoadFromFile(TEXTURE_DESC& Descriptor, int FlipImage);
 	static Texture* FramebufferAttachment(TEXTURE_DESC& Descriptor);
-	static Texture* FramebufferMultiSample(TEXTURE_DESC& Descriptor, uint32_t Samples);
+	static Texture* MultisampleAttachment(TEXTURE_DESC& Descriptor, uint32_t Samples);
+
 
 	const TEXTURE_DESC& Properties() { return m_Descriptor; }
 	const GLuint GetID() { return m_ID; }
 	~Texture();
+
 
 	void Bind() const;
 	void Unbind() const;

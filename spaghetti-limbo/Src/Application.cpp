@@ -18,7 +18,7 @@ int Application::OnStart()
 
 	float VertexData[] =
 	{
-		 0.0f,   1.0f,		1.0f, 0.0f, 0.0f,	0.0f, 1.0f,
+		-1.0f,   1.0f,		1.0f, 0.0f, 0.0f,	0.0f, 1.0f,
 		-1.0f,  -1.0f,		0.0f, 1.0f, 0.0f,	0.0f, 0.0f,
 		 1.0f,  -1.0f,		0.0f, 0.0f, 1.0f,	1.0f, 0.0f,
 		 1.0f,   1.0f,		0.0f, 1.0f, 0.3f,	1.0f, 1.0f
@@ -77,13 +77,13 @@ int Application::OnStart()
 		RenderTarget->Bind();
 
 		Renderer::Instance.Clear(GL_COLOR_BUFFER_BIT);
-		Renderer::Instance.Draw(GL_TRIANGLES, VAO, IBO, FooShader.get(), 3);
+		Renderer::Instance.Draw(GL_TRIANGLES, VAO, IBO, FooShader.get(), 6);
 		
 		RenderTarget->Unbind();
 
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, RenderTarget->GetID());
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-		glBlitFramebuffer(0, 0, m_Width, m_Height, 0, 0, m_Width, m_Height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+		glBlitFramebuffer(0, 0, m_Width, m_Height, 0, 0, m_Width, m_Height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 
 		//Renderer::Instance.Present();
 		Renderer::Instance.EndFrame(m_Window);
