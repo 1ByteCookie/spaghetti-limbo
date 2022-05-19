@@ -14,15 +14,6 @@ Texture* Texture::LoadFromFile(TEXTURE_DESC& Descriptor, int FlipImage)
 	This->m_Channels = Channels;
 
 
-	This->Bind();
-	glGenerateMipmap(Descriptor.Target);
-	glTexParameteri(Descriptor.Target, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(Descriptor.Target, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(Descriptor.Target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(Descriptor.Target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	This->Unbind();
-
-
 	if (Buffer) { stbi_image_free(Buffer); }
 	return This;
 }
@@ -82,6 +73,12 @@ Texture::Texture(TEXTURE_DESC& Descriptor, unsigned char* Buffer)
 				 m_Descriptor.Format,
 				 m_Descriptor.BufferType,
 				 Buffer);
+
+	glGenerateMipmap(Descriptor.Target);
+	glTexParameteri(Descriptor.Target, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(Descriptor.Target, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(Descriptor.Target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(Descriptor.Target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
 	glBindTexture(m_Descriptor.Target, 0);
 }

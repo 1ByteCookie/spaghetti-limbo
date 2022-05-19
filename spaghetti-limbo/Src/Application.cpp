@@ -15,7 +15,7 @@ int Application::OnStart()
 	std::unique_ptr<Framebuffer> RenderTarget2( Framebuffer::FBOIntermediate(1, m_Width, m_Height) );
 
 	Renderer::Instance.InitPostprocess("Res/Shaders/PostprocessVS.glsl", "Res/Shaders/PostprocessFS.glsl");
-	Renderer::Instance.Postprocess()->GetShader()->Uniform1i("Scene", 1);
+	Renderer::Instance.Postprocess()->GetShader()->Uniform1i("Scene", RenderTarget2->GetColor()->Properties().Slot);
 
 
 	float VertexData[] =
@@ -84,9 +84,8 @@ int Application::OnStart()
 		RenderTarget->Unbind();
 
 		Framebuffer::Blit(RenderTarget.get(), RenderTarget2.get());
-		Framebuffer::Blit(RenderTarget2.get(), nullptr);
 
-		//Renderer::Instance.Present();
+		Renderer::Instance.Present();
 		Renderer::Instance.EndFrame(m_Window);
 	}
 
