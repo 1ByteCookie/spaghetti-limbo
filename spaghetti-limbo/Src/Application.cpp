@@ -11,7 +11,7 @@ Application Application::Instance;
 int Application::OnStart()
 {
 	glEnable(GL_CULL_FACE);
-	std::unique_ptr<Framebuffer> RenderTarget( Framebuffer::FramebufferC1(0, 1 , m_Width, m_Height) );
+	std::unique_ptr<Framebuffer> RenderTarget( Framebuffer::FBOMultisample(0, 1 , m_Width, m_Height, 4) );
 
 	Renderer::Instance.InitPostprocess("Res/Shaders/PostprocessVS.glsl", "Res/Shaders/PostprocessFS.glsl");
 	Renderer::Instance.Postprocess()->GetShader()->Uniform1i("Scene", RenderTarget->GetColor()->Properties().Slot);

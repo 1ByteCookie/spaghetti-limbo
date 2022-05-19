@@ -8,7 +8,17 @@ class Framebuffer
 {
 public:
 	// creates a framebuffer with 1 color attachment
-	static Framebuffer* FramebufferC1(int ColorSlot, int DepthStencilSlot, int Width, int Height);
+	static Framebuffer* FramebufferC1(	uint32_t ColorSlot,
+										uint32_t DepthStencilSlot,
+										uint32_t Width,
+										uint32_t Height);
+	
+	// creates a multiesample framebuffer
+	static Framebuffer* FBOMultisample( uint32_t ColorSlot,
+										uint32_t DepthStencilSlot,
+										uint32_t Width,
+										uint32_t Height,
+										uint32_t Samples);
 
 	~Framebuffer();
 	void Bind() const;
@@ -18,7 +28,7 @@ public:
 	inline const auto& GetID() const { return m_ID; }
 
 private:
-	Framebuffer(TEXTURE_DESC& Color, TEXTURE_DESC& Depth);
+	Framebuffer(Texture* Color, Texture* DepthStencil);
 
 	GLuint						m_ID;
 	std::unique_ptr<Texture>	m_Color;
