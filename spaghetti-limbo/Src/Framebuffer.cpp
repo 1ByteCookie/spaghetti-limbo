@@ -67,6 +67,25 @@ Framebuffer* Framebuffer::FBOMultisample(uint32_t ColorSlot,
 }
 
 
+Framebuffer* Framebuffer::FBOIntermediate(	uint32_t ColorSlot,
+											uint32_t Width,
+											uint32_t Height)
+{
+	TEXTURE_DESC cDescriptor = { };
+	cDescriptor.Slot			= ColorSlot;
+	cDescriptor.Target			= GL_TEXTURE_2D;
+	cDescriptor.InternalFormat	= GL_RGB;
+	cDescriptor.Format			= GL_RGB;
+	cDescriptor.BufferType		= GL_UNSIGNED_BYTE;
+	cDescriptor.Width			= Width;
+	cDescriptor.Height			= Height;
+	Texture* Color = Texture::FramebufferAttachment(cDescriptor);
+
+	Framebuffer* This = new Framebuffer(Color);
+	return This;
+}
+
+
 void Framebuffer::Blit(Framebuffer* Source, Framebuffer* Destination)
 {
 	Source->Bind(READ);
@@ -147,6 +166,30 @@ Framebuffer::Framebuffer(Texture* Color, Texture* DepthStencil)
 
 	m_Color->Bind();
 	m_DepthStencil->Bind();
+
+	Unbind();
+}
+
+Framebuffer::Framebuffer(Texture* Color)
+	: m_Color(Color)
+	, m_DepthStencil(nullptr)
+	, m_State(READ_WRITE)
+{
+	glGenFramebuffers(1, &m_ID);
+
+
+	Bind(READ_WRITE);
+
+	glFramebufferTexture2D(	GL_FRAMEBUFFER,
+							GL_COLOR_ATTACHMENT0,
+							m_Color->Properties().Target,
+							m_Color->GetID(),
+							0);
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		std::cout << this << ": Framebuffer creation failed!" << std::endl;
+
+	m_Color->Bind();
 
 	Unbind();
 }

@@ -11,10 +11,12 @@ Application Application::Instance;
 int Application::OnStart()
 {
 	glEnable(GL_CULL_FACE);
-	std::unique_ptr<Framebuffer> RenderTarget( Framebuffer::FBOMultisample(0, 1 , m_Width, m_Height, 4) );
+	std::unique_ptr<Framebuffer> RenderTarget( Framebuffer::FBOMultisample(0, 0 , m_Width, m_Height, 8) );
+	std::unique_ptr<Framebuffer> RenderTarget2( Framebuffer::FBOIntermediate(1, m_Width, m_Height) );
 
 	Renderer::Instance.InitPostprocess("Res/Shaders/PostprocessVS.glsl", "Res/Shaders/PostprocessFS.glsl");
-	Renderer::Instance.Postprocess()->GetShader()->Uniform1i("Scene", RenderTarget->GetColor()->Properties().Slot);
+	Renderer::Instance.Postprocess()->GetShader()->Uniform1i("Scene", 1);
+
 
 	float VertexData[] =
 	{
@@ -55,7 +57,7 @@ int Application::OnStart()
 
 
 	TEXTURE_DESC tDescriptor = { };
-	tDescriptor.Slot			= 2;
+	tDescriptor.Slot			= 3;
 	tDescriptor.Target			= GL_TEXTURE_2D;
 	tDescriptor.InternalFormat	= GL_SRGB;
 	tDescriptor.Format			= GL_RGB;
@@ -81,7 +83,8 @@ int Application::OnStart()
 		
 		RenderTarget->Unbind();
 
-		Framebuffer::Blit(RenderTarget.get(), nullptr);
+		Framebuffer::Blit(RenderTarget.get(), RenderTarget2.get());
+		Framebuffer::Blit(RenderTarget2.get(), nullptr);
 
 		//Renderer::Instance.Present();
 		Renderer::Instance.EndFrame(m_Window);
