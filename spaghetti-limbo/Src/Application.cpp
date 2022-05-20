@@ -1,6 +1,8 @@
 #include "Application.hpp"
+#include <glm/gtc/matrix_transform.hpp>
 #include <memory>
 #include <iostream>
+
 #include "Shader.hpp"
 #include "Texture.hpp"
 #include "Renderer.hpp"
@@ -10,76 +12,38 @@ Application Application::Instance;
 
 int Application::OnStart()
 {
-	glEnable(GL_CULL_FACE);
+	glEnable(GL_CULL_FACE); glEnable(GL_DEPTH_TEST);
 	std::unique_ptr<Framebuffer> RenderTarget( Framebuffer::FBOMultisample(0, 0 , m_Width, m_Height, 8) );
 	std::unique_ptr<Framebuffer> RenderTarget2( Framebuffer::FBOIntermediate(1, m_Width, m_Height) );
 
 	Renderer::Instance.InitPostprocess("Res/Shaders/PostprocessVS.glsl", "Res/Shaders/PostprocessFS.glsl");
 	Renderer::Instance.Postprocess()->GetShader()->Uniform1i("Scene", RenderTarget2->GetColor()->Properties().Slot);
 
-
-	float VertexData[] =
-	{
-		-1.0f,   1.0f,		1.0f, 0.0f, 0.0f,	0.0f, 1.0f,
-		-1.0f,  -1.0f,		0.0f, 1.0f, 0.0f,	0.0f, 0.0f,
-		 1.0f,  -1.0f,		0.0f, 0.0f, 1.0f,	1.0f, 0.0f,
-		 1.0f,   1.0f,		0.0f, 1.0f, 0.3f,	1.0f, 1.0f
-	};
-
-	uint32_t IndexData[] =
-	{
-		0, 1, 2,
-		0, 2, 3
-	};
+	glm::mat4 Projection = glm::perspective(glm::radians(45.0f), (float)m_Width/m_Height, 0.001f, 100.0f);
+	glm::mat4 View = glm::lookAt(glm::vec3(2.0f, 3.0f, 3.0f), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 
-	GLuint VAO, VBO, IBO;
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
+	Model Suzanne("Res/Models/Suzanne/Suzanne.obj");
+	glm::translate(Suzanne.Transform(), glm::vec3(0.0f));
 
-	
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(VertexData), VertexData, GL_STATIC_DRAW);
-
-
-	glGenBuffers(1, &IBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(IndexData), IndexData, GL_STATIC_DRAW);
-
-
-	glVertexAttribPointer( 0, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)0 );
-	glVertexAttribPointer( 1, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(2 * sizeof(float)) );
-	glVertexAttribPointer( 2, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(5 * sizeof(float)) );
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glEnableVertexAttribArray(2);
-
-
-	TEXTURE_DESC tDescriptor = { };
-	tDescriptor.Slot			= 3;
-	tDescriptor.Target			= GL_TEXTURE_2D;
-	tDescriptor.InternalFormat	= GL_SRGB;
-	tDescriptor.Format			= GL_RGB;
-	tDescriptor.BufferType		= GL_UNSIGNED_BYTE;
-	tDescriptor.Path			= "Res/Texture2D/fromReddit.jpg";
-	std::unique_ptr<Texture> Image ( Texture::LoadFromFile(tDescriptor, true) );
-	Image->Bind();
 
 	std::unique_ptr<Shader> FooShader (Shader::CreateVF( "Res/Shaders/DefaultVS.glsl", "Res/Shaders/DefaultFS.glsl" ) );
-	FooShader->Uniform1i("Diffuse", Image->Properties().Slot);
+	FooShader->UniformMatrix4fv("Projection", Projection);
+	FooShader->UniformMatrix4fv("View", View);
+	FooShader->UniformMatrix4fv("Model", Suzanne.Transform());
+
 
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	while (!glfwWindowShouldClose(m_Window))
 	{
-		Renderer::Instance.Clear(GL_COLOR_BUFFER_BIT);
+		Renderer::Instance.Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glfwPollEvents();
 		
 
 		RenderTarget->Bind(Framebuffer::READ_WRITE);
 
-		Renderer::Instance.Clear(GL_COLOR_BUFFER_BIT);
-		Renderer::Instance.Draw(GL_TRIANGLES, VAO, IBO, FooShader.get(), 6);
+		Renderer::Instance.Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		Renderer::Instance.Draw(GL_TRIANGLES, Suzanne, FooShader.get());
 		
 		RenderTarget->Unbind();
 

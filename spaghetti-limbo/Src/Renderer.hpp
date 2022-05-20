@@ -3,8 +3,10 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <memory>
+
 #include "Shader.hpp"
 #include "Postprocess.hpp"
+#include "Model.hpp"
 
 class Renderer
 {
@@ -19,7 +21,7 @@ public:
 	void Present();
 
 	void Draw(GLuint Primitive, GLuint VAO, GLuint IBO, const Shader* ShaderProgram, uint32_t Indices);
-	
+	void Draw(GLuint Primitve, Model& Model, const Shader* ShaderProgram);
 
 	inline float GetDeltaTime() { return m_DeltaTime; }
 

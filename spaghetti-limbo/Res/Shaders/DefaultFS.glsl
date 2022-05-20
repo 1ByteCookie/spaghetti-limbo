@@ -9,7 +9,6 @@ in VS_OUT
 
 } Input;
 
-uniform sampler2D Diffuse;
 
 void main()
 {

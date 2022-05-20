@@ -182,6 +182,8 @@ XCOPY $(SolutionDir)Dependencies\ASSIMP\lib\assimp-vc143-mt.dll $(OutDir) /y</Co
     <ClCompile Include="Src\Application.cpp" />
     <ClCompile Include="Src\Framebuffer.cpp" />
     <ClCompile Include="Src\main.cxx" />
+    <ClCompile Include="Src\Mesh.cpp" />
+    <ClCompile Include="Src\Model.cpp" />
     <ClCompile Include="Src\Postprocess.cpp" />
     <ClCompile Include="Src\Renderer.cpp" />
     <ClCompile Include="Src\Shader.cpp" />
@@ -193,6 +195,8 @@ XCOPY $(SolutionDir)Dependencies\ASSIMP\lib\assimp-vc143-mt.dll $(OutDir) /y</Co
   <ItemGroup>
     <ClInclude Include="Src\Application.hpp" />
     <ClInclude Include="Src\Framebuffer.hpp" />
+    <ClInclude Include="Src\Mesh.hpp" />
+    <ClInclude Include="Src\Model.hpp" />
     <ClInclude Include="Src\Postprocess.hpp" />
     <ClInclude Include="Src\Renderer.hpp" />
     <ClInclude Include="Src\Shader.hpp" />

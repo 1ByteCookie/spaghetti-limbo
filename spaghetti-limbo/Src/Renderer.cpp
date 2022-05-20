@@ -40,3 +40,13 @@ void Renderer::Draw(GLuint Primitive, GLuint VAO, GLuint IBO, const Shader* Shad
 
 	glDrawElements(Primitive, Indices, GL_UNSIGNED_INT, nullptr);
 }
+
+void Renderer::Draw(GLuint Primitve, Model& Model, const Shader* ShaderProgram)
+{
+	ShaderProgram->Bind();
+	for (uint32_t i = 0; i < Model.GetMeshes().size(); i++)
+	{
+		Model.GetMeshes()[i].Bind();
+		glDrawElements(Primitve, Model.GetMeshes()[i].GetIndices(), GL_UNSIGNED_INT, nullptr);
+	}
+}
