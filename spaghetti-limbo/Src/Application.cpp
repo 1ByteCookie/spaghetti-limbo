@@ -8,8 +8,6 @@
 #include "Renderer.hpp"
 #include "Framebuffer.hpp"
 
-Application Application::Instance;
-
 int Application::OnStart()
 {
 	glEnable(GL_CULL_FACE); glEnable(GL_DEPTH_TEST);

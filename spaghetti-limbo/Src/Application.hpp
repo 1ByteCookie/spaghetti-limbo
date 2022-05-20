@@ -7,15 +7,13 @@
 class Application
 {
 public:
-	static Application Instance;
-
 	int OnStart();
 
-
-private:
 	Application();
 	~Application();
 
+
+private:
 
 	GLFWwindow* m_Window;
 	std::string		m_Title;

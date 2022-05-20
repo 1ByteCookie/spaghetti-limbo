@@ -2,5 +2,9 @@
 
 int main()
 {
-	return Application::Instance.OnStart();
+	Application* This = new Application;
+	int Status = This->OnStart();
+	delete This;
+
+	return Status;
 }
