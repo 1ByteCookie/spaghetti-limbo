@@ -26,6 +26,9 @@ int Application::OnStart()
 
 
 	Model Suzanne("Res/Models/Suzanne/Suzanne.obj");
+	glm::vec3 SuzanneColor = glm::vec3(0.5f, 0.0f, 1.0f);
+	glm::vec3 SuzannePosition = glm::vec3(0.0f);
+	glm::vec3 SuzanneRotation = glm::vec3(0.0f);
 	Suzanne.Transform() = glm::translate(Suzanne.Transform(), glm::vec3(0.0f, 0.0f, 0.0f));
 	std::unique_ptr<Shader> SuzanneShader (Shader::CreateVF( "Res/Shaders/DefaultVS.glsl", "Res/Shaders/DefaultFS.glsl" ) );
 	{

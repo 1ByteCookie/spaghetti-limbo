@@ -5,8 +5,6 @@
 
 Model::Model(const std::string& Path)
 	:	m_Transform( glm::mat4(1.0f) )
-	,	m_Position( glm::vec3(0.0f) )
-	,	m_Rotation( glm::vec3(0.0f) )
 {
 	Load(Path);
 }
