@@ -7,8 +7,9 @@ layout(location = 2) in vec2 _UV_;
 out VS_OUT
 {
 
-	vec3 Color;
+	vec3 Normal;
 	vec2 UV;
+	vec3 FragmentPosition;
 
 } Output;
 
@@ -18,8 +19,9 @@ uniform mat4 Model;
 
 void main()
 {
-	Output.Color	= _Normal_;
-	Output.UV		= _UV_;
+	Output.Normal				= _Normal_;
+	Output.UV					= _UV_;
+	Output.FragmentPosition		= vec3(Model * vec4(_VertexPosition_, 1.0f));
 
 	gl_Position		= Projection * View * Model * vec4(_VertexPosition_, 1.0f);
 }

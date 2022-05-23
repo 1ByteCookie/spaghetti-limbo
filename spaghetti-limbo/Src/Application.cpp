@@ -17,19 +17,28 @@ int Application::OnStart()
 	Renderer::Instance.InitPostprocess("Res/Shaders/PostprocessVS.glsl", "Res/Shaders/PostprocessFS.glsl");
 	Renderer::Instance.Postprocess()->GetShader()->Uniform1i("Scene", RenderTarget2->GetColor()->Properties().Slot);
 
+	glm::vec3 CamPosition(-6.0f, 2.0f, 6.0f);
 	glm::mat4 Projection = glm::perspective(glm::radians(45.0f), (float)m_Width/m_Height, 0.001f, 100.0f);
-	glm::mat4 View = glm::lookAt(glm::vec3(2.0f, 3.0f, 3.0f), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 View = glm::lookAt(CamPosition, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 
 	Model Suzanne("Res/Models/Suzanne/Suzanne.obj");
-	glm::translate(Suzanne.Transform(), glm::vec3(0.0f));
+	Suzanne.Transform() = glm::translate(Suzanne.Transform(), glm::vec3(0.0f, 0.0f, 0.0f));
 
+	Model Walls("Res/Models/Walls/Walls.obj");
+	Walls.Transform() = glm::translate(Walls.Transform(), glm::vec3(0.0f));
+	Walls.Transform() = glm::scale(Walls.Transform(), glm::vec3(0.5f));
 
 	std::unique_ptr<Shader> FooShader (Shader::CreateVF( "Res/Shaders/DefaultVS.glsl", "Res/Shaders/DefaultFS.glsl" ) );
 	FooShader->UniformMatrix4fv("Projection", Projection);
 	FooShader->UniformMatrix4fv("View", View);
-	FooShader->UniformMatrix4fv("Model", Suzanne.Transform());
 
+	glm::vec3 DirectionalLight (-1.0f, 1.0f, 0.5f);
+	glm::vec3 SuzanneColor (0.5f, 0.0f, 1.0f);
+	glm::vec3 WallsColor (1.0f);
+
+	FooShader->Uniform3fv("DirectionalLight", DirectionalLight);
+	FooShader->Uniform3fv("CamPosition", CamPosition);
 
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	while (!glfwWindowShouldClose(m_Window))
@@ -41,8 +50,16 @@ int Application::OnStart()
 		RenderTarget->Bind(Framebuffer::READ_WRITE);
 
 		Renderer::Instance.Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		
+		FooShader->UniformMatrix4fv("Model", Suzanne.Transform());
+		FooShader->Uniform3fv("Color", SuzanneColor);
 		Renderer::Instance.Draw(GL_TRIANGLES, Suzanne, FooShader.get());
 		
+		FooShader->UniformMatrix4fv("Model", Walls.Transform());
+		FooShader->Uniform3fv("Color", WallsColor);
+		Renderer::Instance.Draw(GL_TRIANGLES, Walls, FooShader.get());
+
+
 		RenderTarget->Unbind();
 
 		Framebuffer::Blit(RenderTarget.get(), RenderTarget2.get());
