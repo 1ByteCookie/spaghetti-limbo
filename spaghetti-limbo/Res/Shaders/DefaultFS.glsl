@@ -33,13 +33,15 @@ uniform vec3		CamPosition;
 
 void main()
 {
-	vec3 LightDirection			= normalize(Light.Direction);
-	vec3 Reflection				= reflect(LightDirection, Input.Normal);
-	vec3 ViewDirection			= normalize(Input.FragmentPosition - CamPosition);
+	vec3 SurfaceNormal			= normalize(Input.Normal);
 	
+	vec3 LightDirection			= normalize(Light.Direction);
+	vec3 ViewDirection			= normalize(CamPosition - Input.FragmentPosition);
+	vec3 Halfway				= normalize(LightDirection + ViewDirection);
 
-	float DiffuseStrength		= max(dot(LightDirection, Input.Normal), 0.0f);
-	float SpecularHightlight	= pow(max(dot(ViewDirection, Reflection), 0.0f), Material.Luster);
+
+	float DiffuseStrength		= max(dot(LightDirection, SurfaceNormal), 0.0f);
+	float SpecularHightlight	= pow(max(dot(SurfaceNormal, Halfway), 0.0f), Material.Luster);
 
 
 

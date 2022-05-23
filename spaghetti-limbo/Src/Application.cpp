@@ -26,10 +26,9 @@ int Application::OnStart()
 
 
 	Model Suzanne("Res/Models/Suzanne/Suzanne.obj");
-	glm::vec3 SuzanneColor = glm::vec3(0.5f, 0.0f, 1.0f);
+	glm::vec3 SuzanneColor = glm::vec3(0.75f, 0.0f, 1.0f);
 	glm::vec3 SuzannePosition = glm::vec3(0.0f);
-	glm::vec3 SuzanneRotation = glm::vec3(0.0f);
-	Suzanne.Transform() = glm::translate(Suzanne.Transform(), glm::vec3(0.0f, 0.0f, 0.0f));
+	Suzanne.Transform() = glm::translate(Suzanne.Transform(), SuzannePosition);
 	std::unique_ptr<Shader> SuzanneShader (Shader::CreateVF( "Res/Shaders/DefaultVS.glsl", "Res/Shaders/DefaultFS.glsl" ) );
 	{
 		SuzanneShader->UniformMatrix4fv("Projection", Projection);
@@ -37,9 +36,9 @@ int Application::OnStart()
 		SuzanneShader->UniformMatrix4fv("Model", Suzanne.Transform());
 		SuzanneShader->Uniform3fv("CamPosition", CamPosition);
 	
-		SuzanneShader->Uniform3fv("Material.Diffuse", glm::vec3(0.5f, 0.0f, 1.0f));
+		SuzanneShader->Uniform3fv("Material.Diffuse", SuzanneColor);
 		SuzanneShader->Uniform3fv("Material.Specular", glm::vec3(0.5f));
-		SuzanneShader->Uniform1f("Material.Luster", 256.0f);
+		SuzanneShader->Uniform1f("Material.Luster", 64.0f);
 	
 		SuzanneShader->Uniform3fv("Light.Direction", DirectionalLight);
 		SuzanneShader->Uniform3fv("Light.Ambient", glm::vec3(0.1f));
