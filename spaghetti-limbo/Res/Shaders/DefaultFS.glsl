@@ -10,23 +10,42 @@ in VS_OUT
 
 } Input;
 
-uniform vec3 CamPosition;
-uniform vec3 Color;
-uniform vec3 DirectionalLight;
+struct MATERIAL
+{
+	vec3	Diffuse;
+	vec3	Specular;
+	float	Luster;
+};
+
+struct LIGHT
+{
+	vec3 Direction;
+	vec3 Ambient;
+	vec3 Diffuse;
+	vec3 Specular;
+};
+
+
+
+uniform MATERIAL	Material;
+uniform LIGHT		Light;
+uniform vec3		CamPosition;
 
 void main()
 {
-	vec3 LightDirection		= normalize(DirectionalLight);
-	vec3 Reflection			= reflect(DirectionalLight, Input.Normal);
-	vec3 ViewDirection		= normalize(Input.FragmentPosition - CamPosition);
+	vec3 LightDirection			= normalize(Light.Direction);
+	vec3 Reflection				= reflect(LightDirection, Input.Normal);
+	vec3 ViewDirection			= normalize(Input.FragmentPosition - CamPosition);
 	
-	float DiffuseStrength		= max(dot(DirectionalLight, Input.Normal), 0.0f);
-	float SpecularHightlight	= pow(max(dot(ViewDirection, Reflection), 0.0f), 16.0f);
-	float SpecularStrength		= 0.5f;
 
-	vec3 Ambient	= Color * 0.1f;
-	vec3 Diffuse	= Color * DiffuseStrength;
-	vec3 Specular	= Color * SpecularHightlight * SpecularStrength;
+	float DiffuseStrength		= max(dot(LightDirection, Input.Normal), 0.0f);
+	float SpecularHightlight	= pow(max(dot(ViewDirection, Reflection), 0.0f), Material.Luster);
+
+
+
+	vec3 Ambient	= Material.Diffuse * Light.Ambient;
+	vec3 Diffuse	= Material.Diffuse * Light.Diffuse * DiffuseStrength;
+	vec3 Specular	= Material.Specular * Light.Specular * SpecularHightlight;
 
 	Output = vec4(Ambient + Diffuse + Specular, 1.0f);
 }

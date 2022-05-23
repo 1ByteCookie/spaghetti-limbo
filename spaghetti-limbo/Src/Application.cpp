@@ -21,24 +21,51 @@ int Application::OnStart()
 	glm::mat4 Projection = glm::perspective(glm::radians(45.0f), (float)m_Width/m_Height, 0.001f, 100.0f);
 	glm::mat4 View = glm::lookAt(CamPosition, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
+	glm::vec3 DirectionalLight(0.0f, 1.0f, 0.5f);
+
+
 
 	Model Suzanne("Res/Models/Suzanne/Suzanne.obj");
 	Suzanne.Transform() = glm::translate(Suzanne.Transform(), glm::vec3(0.0f, 0.0f, 0.0f));
+	std::unique_ptr<Shader> SuzanneShader (Shader::CreateVF( "Res/Shaders/DefaultVS.glsl", "Res/Shaders/DefaultFS.glsl" ) );
+	{
+		SuzanneShader->UniformMatrix4fv("Projection", Projection);
+		SuzanneShader->UniformMatrix4fv("View", View);
+		SuzanneShader->UniformMatrix4fv("Model", Suzanne.Transform());
+		SuzanneShader->Uniform3fv("CamPosition", CamPosition);
+	
+		SuzanneShader->Uniform3fv("Material.Diffuse", glm::vec3(0.5f, 0.0f, 1.0f));
+		SuzanneShader->Uniform3fv("Material.Specular", glm::vec3(0.5f));
+		SuzanneShader->Uniform1f("Material.Luster", 256.0f);
+	
+		SuzanneShader->Uniform3fv("Light.Direction", DirectionalLight);
+		SuzanneShader->Uniform3fv("Light.Ambient", glm::vec3(0.1f));
+		SuzanneShader->Uniform3fv("Light.Diffuse", glm::vec3(1.0f));
+		SuzanneShader->Uniform3fv("Light.Specular", glm::vec3(1.0f));
+	}
+
+
 
 	Model Walls("Res/Models/Walls/Walls.obj");
 	Walls.Transform() = glm::translate(Walls.Transform(), glm::vec3(0.0f));
 	Walls.Transform() = glm::scale(Walls.Transform(), glm::vec3(0.5f));
+	std::unique_ptr<Shader> WallsShader(Shader::CreateVF("Res/Shaders/DefaultVS.glsl", "Res/Shaders/DefaultFS.glsl"));
+	{
+		WallsShader->UniformMatrix4fv("Projection", Projection);
+		WallsShader->UniformMatrix4fv("View", View);
+		WallsShader->UniformMatrix4fv("Model", Walls.Transform());
+		WallsShader->Uniform3fv("CamPosition", CamPosition);
 
-	std::unique_ptr<Shader> FooShader (Shader::CreateVF( "Res/Shaders/DefaultVS.glsl", "Res/Shaders/DefaultFS.glsl" ) );
-	FooShader->UniformMatrix4fv("Projection", Projection);
-	FooShader->UniformMatrix4fv("View", View);
+		WallsShader->Uniform3fv("Material.Diffuse", glm::vec3(1.0f));
+		WallsShader->Uniform3fv("Material.Specular", glm::vec3(0.5f));
+		WallsShader->Uniform1f("Material.Luster", 8.0f);
 
-	glm::vec3 DirectionalLight (-1.0f, 1.0f, 0.5f);
-	glm::vec3 SuzanneColor (0.5f, 0.0f, 1.0f);
-	glm::vec3 WallsColor (1.0f);
+		WallsShader->Uniform3fv("Light.Direction", DirectionalLight);
+		WallsShader->Uniform3fv("Light.Ambient", glm::vec3(0.1f));
+		WallsShader->Uniform3fv("Light.Diffuse", glm::vec3(1.0f));
+		WallsShader->Uniform3fv("Light.Specular", glm::vec3(1.0f));
+	}
 
-	FooShader->Uniform3fv("DirectionalLight", DirectionalLight);
-	FooShader->Uniform3fv("CamPosition", CamPosition);
 
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	while (!glfwWindowShouldClose(m_Window))
@@ -51,13 +78,8 @@ int Application::OnStart()
 
 		Renderer::Instance.Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-		FooShader->UniformMatrix4fv("Model", Suzanne.Transform());
-		FooShader->Uniform3fv("Color", SuzanneColor);
-		Renderer::Instance.Draw(GL_TRIANGLES, Suzanne, FooShader.get());
-		
-		FooShader->UniformMatrix4fv("Model", Walls.Transform());
-		FooShader->Uniform3fv("Color", WallsColor);
-		Renderer::Instance.Draw(GL_TRIANGLES, Walls, FooShader.get());
+		Renderer::Instance.Draw(GL_TRIANGLES, Suzanne, SuzanneShader.get());
+		Renderer::Instance.Draw(GL_TRIANGLES, Walls, WallsShader.get());
 
 
 		RenderTarget->Unbind();

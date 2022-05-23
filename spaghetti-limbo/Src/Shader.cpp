@@ -29,7 +29,7 @@ void Shader::Uniform1f(const std::string& Name, float v0)
 	Bind(); glUniform1f(GetUniformLocation(Name), v0);
 }
 
-void Shader::Uniform3fv(const std::string& Name, glm::vec3& Vector)
+void Shader::Uniform3fv(const std::string& Name, const glm::vec3& Vector)
 {
 	Bind(); glUniform3fv(GetUniformLocation(Name), 1, glm::value_ptr(Vector));
 }

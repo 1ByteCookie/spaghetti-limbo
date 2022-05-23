@@ -28,8 +28,8 @@ public:
 
 	void Uniform1f(const std::string& Name, float v0);
 
-	void Uniform3fv(const  std::string& Name, glm::vec3& Vector);
-	
+	void Uniform3fv(const std::string& Name, const glm::vec3& Vector);
+
 	void UniformMatrix4fv(const std::string& Name, glm::mat4& Matrix);
 
 private:
