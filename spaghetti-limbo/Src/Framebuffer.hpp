@@ -47,6 +47,7 @@ public:
 	void Unbind();
 
 	inline const auto& GetColor() const { return m_Color.get(); }
+	inline const auto& GetDepth() const { return m_Depth.get(); }
 	inline const auto& GetID() const { return m_ID; }
 
 

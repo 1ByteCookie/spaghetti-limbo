@@ -19,13 +19,27 @@ int Application::OnStart()
 	Renderer::Instance.InitPostprocess("Res/Shaders/PostprocessVS.glsl", "Res/Shaders/PostprocessFS.glsl");
 	Renderer::Instance.Postprocess()->GetShader()->Uniform1i("Scene", RenderTarget2->GetColor()->Properties().Slot);
 
+
 	glm::vec3 CamPosition(-6.0f, 2.0f, 6.0f);
 	glm::mat4 Projection = glm::perspective(glm::radians(45.0f), (float)m_Width/m_Height, 0.001f, 100.0f);
-	glm::mat4 View = glm::lookAt(CamPosition, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 View = glm::lookAt(CamPosition,
+								 glm::vec3(0.0f),
+								 glm::vec3(0.0f, 1.0f, 0.0f));
 
-	glm::vec3 DirectionalLight(0.0f, 1.0f, 0.5f);
+
+	glm::vec3 PointLight(-3.0f, 4.0f, 3.0f);
 
 
+
+	glm::mat4 LightPerspective = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 7.5f);
+	LightPerspective = LightPerspective * glm::lookAt(	PointLight,
+														glm::vec3(0.0f),
+														glm::vec3(0.0f, 1.0f, 0.0f));
+
+	std::unique_ptr<Shader> WriteToShadowMap( Shader::CreateVF("Res/Shaders/ShadowMapVS.glsl", "Res/Shaders/ShadowMapFS.glsl") );
+	{
+		WriteToShadowMap->UniformMatrix4fv("LightSpace", LightPerspective);
+	}
 
 	Model Suzanne("Res/Models/Suzanne/Suzanne.obj");
 	glm::vec3 SuzanneColor = glm::vec3(0.75f, 0.0f, 1.0f);
@@ -42,7 +56,7 @@ int Application::OnStart()
 		SuzanneShader->Uniform3fv("Material.Specular", glm::vec3(0.5f));
 		SuzanneShader->Uniform1f("Material.Luster", 64.0f);
 	
-		SuzanneShader->Uniform3fv("Light.Direction", DirectionalLight);
+		SuzanneShader->Uniform3fv("Light.Position", PointLight);
 		SuzanneShader->Uniform3fv("Light.Ambient", glm::vec3(0.1f));
 		SuzanneShader->Uniform3fv("Light.Diffuse", glm::vec3(1.0f));
 		SuzanneShader->Uniform3fv("Light.Specular", glm::vec3(1.0f));
@@ -64,7 +78,7 @@ int Application::OnStart()
 		WallsShader->Uniform3fv("Material.Specular", glm::vec3(0.5f));
 		WallsShader->Uniform1f("Material.Luster", 8.0f);
 
-		WallsShader->Uniform3fv("Light.Direction", DirectionalLight);
+		WallsShader->Uniform3fv("Light.Position", PointLight);
 		WallsShader->Uniform3fv("Light.Ambient", glm::vec3(0.1f));
 		WallsShader->Uniform3fv("Light.Diffuse", glm::vec3(1.0f));
 		WallsShader->Uniform3fv("Light.Specular", glm::vec3(1.0f));
@@ -80,7 +94,13 @@ int Application::OnStart()
 
 		ShadowMap->Bind(Framebuffer::READ_WRITE);
 
-
+		Renderer::Instance.Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		
+		WriteToShadowMap->UniformMatrix4fv("Model", Suzanne.Transform());
+		Renderer::Instance.Draw(GL_TRIANGLES, Suzanne, WriteToShadowMap.get());
+		
+		WriteToShadowMap->UniformMatrix4fv("Model", Walls.Transform());
+		Renderer::Instance.Draw(GL_TRIANGLES, Walls, WriteToShadowMap.get());
 
 		ShadowMap->Unbind();
 

@@ -30,7 +30,7 @@ public:
 
 	void Uniform3fv(const std::string& Name, const glm::vec3& Vector);
 
-	void UniformMatrix4fv(const std::string& Name, glm::mat4& Matrix);
+	void UniformMatrix4fv(const std::string& Name, const glm::mat4& Matrix);
 
 private:
 	Shader() :m_ID(0) { }

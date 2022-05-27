@@ -19,7 +19,7 @@ struct MATERIAL
 
 struct LIGHT
 {
-	vec3 Direction;
+	vec3 Position;
 	vec3 Ambient;
 	vec3 Diffuse;
 	vec3 Specular;
@@ -35,7 +35,7 @@ void main()
 {
 	vec3 SurfaceNormal			= normalize(Input.Normal);
 	
-	vec3 LightDirection			= normalize(Light.Direction);
+	vec3 LightDirection			= normalize(Light.Position - Input.FragmentPosition);
 	vec3 ViewDirection			= normalize(CamPosition - Input.FragmentPosition);
 	vec3 Halfway				= normalize(LightDirection + ViewDirection);
 

@@ -1361,5 +1361,7 @@
     <None Include="Res\Shaders\DefaultFS.glsl" />
     <None Include="Res\Shaders\PostprocessVS.glsl" />
     <None Include="Res\Shaders\PostprocessFS.glsl" />
+    <None Include="Res\Shaders\ShadowMapVS.glsl" />
+    <None Include="Res\Shaders\ShadowMapFS.glsl" />
   </ItemGroup>
 </Project>

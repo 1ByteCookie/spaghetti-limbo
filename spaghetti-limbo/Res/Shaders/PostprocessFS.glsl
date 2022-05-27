@@ -13,5 +13,8 @@ uniform sampler2D Scene;
 void main()
 {
 	Output = texture(Scene, Input.UV);
-	Output.rgb = pow(Output.rgb, vec3(1/2.2));
+	Output.rgb = pow( Output.rgb, vec3(1/2.2) );
+
+	//float DepthValue = texture(Scene, Input.UV).r;
+	//Output = vec4(vec3(DepthValue), 1.0f);
 }

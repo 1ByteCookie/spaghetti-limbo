@@ -494,6 +494,8 @@ XCOPY $(SolutionDir)Dependencies\ASSIMP\lib\assimp-vc143-mt.dll $(OutDir) /y</Co
     <None Include="Res\Shaders\DefaultVS.glsl" />
     <None Include="Res\Shaders\PostprocessFS.glsl" />
     <None Include="Res\Shaders\PostprocessVS.glsl" />
+    <None Include="Res\Shaders\ShadowMapFS.glsl" />
+    <None Include="Res\Shaders\ShadowMapVS.glsl" />
     <None Include="Src\Utils\glm\detail\func_common.inl" />
     <None Include="Src\Utils\glm\detail\func_common_simd.inl" />
     <None Include="Src\Utils\glm\detail\func_exponential.inl" />

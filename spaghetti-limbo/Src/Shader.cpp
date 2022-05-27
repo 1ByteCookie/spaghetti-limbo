@@ -34,7 +34,7 @@ void Shader::Uniform3fv(const std::string& Name, const glm::vec3& Vector)
 	Bind(); glUniform3fv(GetUniformLocation(Name), 1, glm::value_ptr(Vector));
 }
 
-void Shader::UniformMatrix4fv(const std::string& Name, glm::mat4& Matrix)
+void Shader::UniformMatrix4fv(const std::string& Name, const glm::mat4& Matrix)
 {
 	Bind(); glUniformMatrix4fv(GetUniformLocation(Name), 1, GL_FALSE, glm::value_ptr(Matrix));
 }
