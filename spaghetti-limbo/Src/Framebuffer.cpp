@@ -81,7 +81,26 @@ Framebuffer* Framebuffer::FBOIntermediate(	uint32_t ColorSlot,
 	cDescriptor.Height			= Height;
 	Texture* Color = Texture::FramebufferAttachment(cDescriptor);
 
-	Framebuffer* This = new Framebuffer(Color);
+	Framebuffer* This = new Framebuffer(Color, nullptr, nullptr);
+	return This;
+}
+
+
+Framebuffer* Framebuffer::DepthMap(uint32_t DepthSlot,
+							 uint32_t Width,
+							 uint32_t Height)
+{
+	TEXTURE_DESC dDescriptor = { };
+	dDescriptor.Slot			= DepthSlot;
+	dDescriptor.Target			= GL_TEXTURE_2D;
+	dDescriptor.InternalFormat	= GL_DEPTH_COMPONENT;
+	dDescriptor.Format			= GL_DEPTH_COMPONENT;
+	dDescriptor.BufferType		= GL_FLOAT;
+	dDescriptor.Width			= Width;
+	dDescriptor.Height			= Height;
+	Texture* Depth = Texture::FramebufferAttachment(dDescriptor);
+
+	Framebuffer* This = new Framebuffer(nullptr, Depth, nullptr);
 	return This;
 }
 
@@ -127,6 +146,12 @@ Framebuffer::~Framebuffer()
 void Framebuffer::Bind(Bindflag Flag)
 {
 	glBindFramebuffer(Flag, m_ID);
+	if (m_Color.get())
+		m_Color->Bind();
+
+	if (m_Depth.get())
+		m_Depth->Bind();
+
 	m_State = Flag;
 }
 
@@ -141,24 +166,21 @@ void Framebuffer::Unbind()
 Framebuffer::Framebuffer(Texture* Color, Texture* DepthStencil)
 	:	m_Color( Color )
 	,	m_DepthStencil( DepthStencil )
+	,	m_Depth(nullptr)
+	,	m_Stencil(nullptr)
 	,	m_State(READ_WRITE)
 {
 	glGenFramebuffers(1, &m_ID);
 	
 	
 	Bind(READ_WRITE);
+	{
+		if (Color)
+			Attach(Color, GL_COLOR_ATTACHMENT0);
 
-	glFramebufferTexture2D( GL_FRAMEBUFFER,
-							GL_COLOR_ATTACHMENT0,
-							m_Color->Properties().Target,
-							m_Color->GetID(),
-							0);
-	
-	glFramebufferTexture2D( GL_FRAMEBUFFER,
-							GL_DEPTH_STENCIL_ATTACHMENT,
-							m_DepthStencil->Properties().Target,
-							m_DepthStencil->GetID(),
-							0);
+		if (DepthStencil)
+			Attach(DepthStencil, GL_DEPTH_STENCIL_ATTACHMENT);
+	}
 
 
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -170,26 +192,47 @@ Framebuffer::Framebuffer(Texture* Color, Texture* DepthStencil)
 	Unbind();
 }
 
-Framebuffer::Framebuffer(Texture* Color)
-	: m_Color(Color)
-	, m_DepthStencil(nullptr)
-	, m_State(READ_WRITE)
+Framebuffer::Framebuffer(Texture* Color, Texture* Depth, Texture* Stencil)
+	:	m_Color( Color )
+	,	m_DepthStencil(nullptr)
+	,	m_Depth( Depth )
+	,	m_Stencil( Stencil )
+	,	m_State( READ_WRITE )
 {
 	glGenFramebuffers(1, &m_ID);
 
 
 	Bind(READ_WRITE);
+	{
+		if (Color)
+			Attach(Color, GL_COLOR_ATTACHMENT0);
 
-	glFramebufferTexture2D(	GL_FRAMEBUFFER,
-							GL_COLOR_ATTACHMENT0,
-							m_Color->Properties().Target,
-							m_Color->GetID(),
-							0);
+		if (Depth)
+			Attach(Depth, GL_DEPTH_ATTACHMENT);
+
+		if (Stencil)
+			Attach(Stencil, GL_STENCIL_ATTACHMENT);
+	}
+
+	if (!Color)
+	{
+		glReadBuffer(GL_NONE);
+		glDrawBuffer(GL_NONE);
+	}
+
 
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		std::cout << this << ": Framebuffer creation failed!" << std::endl;
 
-	m_Color->Bind();
 
 	Unbind();
+}
+
+void Framebuffer::Attach(Texture* texture, GLuint AttachmentType)
+{
+	glFramebufferTexture2D( READ_WRITE,
+							AttachmentType,
+							texture->Properties().Target,
+							texture->GetID(),
+							0);
 }

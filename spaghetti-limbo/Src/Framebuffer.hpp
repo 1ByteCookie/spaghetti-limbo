@@ -30,10 +30,15 @@ public:
 										uint32_t Height,
 										uint32_t Samples);
 
-	//creates a framebuffer for passing a multisample texture to, should be used for blitting
+	// creates a framebuffer with only a color attachment
 	static Framebuffer* FBOIntermediate(uint32_t ColorSlot,
 										uint32_t Width,
 										uint32_t Height);
+
+	// creates a framebuffer with only a depth attachment
+	static Framebuffer* DepthMap(uint32_t DepthSlot,
+								 uint32_t Width,
+								 uint32_t Height);
 
 	static void Blit(Framebuffer* Source, Framebuffer* Destination);
 	static void ClearState();
@@ -50,11 +55,16 @@ public:
 private:
 
 	Framebuffer(Texture* Color, Texture* DepthStencil);
-	Framebuffer(Texture* Color);
+	Framebuffer(Texture* Color, Texture* Depth, Texture* Stencil);
+	
+	void Attach(Texture* texture, GLuint AttachmentType);
 
 	GLuint						m_ID;
+
 	std::unique_ptr<Texture>	m_Color;
 	std::unique_ptr<Texture>	m_DepthStencil;
+	std::unique_ptr<Texture>	m_Depth;
+	std::unique_ptr<Texture>	m_Stencil;
 
 	Bindflag					m_State;
 };

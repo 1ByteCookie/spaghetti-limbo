@@ -13,6 +13,8 @@ int Application::OnStart()
 	glEnable(GL_CULL_FACE); glEnable(GL_DEPTH_TEST);
 	std::unique_ptr<Framebuffer> RenderTarget( Framebuffer::FBOMultisample(0, 0 , m_Width, m_Height, 8) );
 	std::unique_ptr<Framebuffer> RenderTarget2( Framebuffer::FBOIntermediate(1, m_Width, m_Height) );
+	std::unique_ptr<Framebuffer> ShadowMap( Framebuffer::DepthMap(0, 1024, 1024) );
+
 
 	Renderer::Instance.InitPostprocess("Res/Shaders/PostprocessVS.glsl", "Res/Shaders/PostprocessFS.glsl");
 	Renderer::Instance.Postprocess()->GetShader()->Uniform1i("Scene", RenderTarget2->GetColor()->Properties().Slot);
@@ -76,15 +78,21 @@ int Application::OnStart()
 		glfwPollEvents();
 		
 
-		RenderTarget->Bind(Framebuffer::READ_WRITE);
+		ShadowMap->Bind(Framebuffer::READ_WRITE);
+
+
+
+		ShadowMap->Unbind();
+
+
+		RenderTarget->Bind(Framebuffer::READ_WRITE);	//========
 
 		Renderer::Instance.Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 		Renderer::Instance.Draw(GL_TRIANGLES, Suzanne, SuzanneShader.get());
 		Renderer::Instance.Draw(GL_TRIANGLES, Walls, WallsShader.get());
 
-
-		RenderTarget->Unbind();
+		RenderTarget->Unbind();							//========
 
 		Framebuffer::Blit(RenderTarget.get(), RenderTarget2.get());
 
