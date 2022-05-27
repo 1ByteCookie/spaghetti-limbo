@@ -93,26 +93,26 @@ int Application::OnStart()
 		
 
 		ShadowMap->Bind(Framebuffer::READ_WRITE);
-
-		Renderer::Instance.Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		{
+			Renderer::Instance.Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			
+			WriteToShadowMap->UniformMatrix4fv("Model", Suzanne.Transform());
+			Renderer::Instance.Draw(GL_TRIANGLES, Suzanne, WriteToShadowMap.get());
 		
-		WriteToShadowMap->UniformMatrix4fv("Model", Suzanne.Transform());
-		Renderer::Instance.Draw(GL_TRIANGLES, Suzanne, WriteToShadowMap.get());
-		
-		WriteToShadowMap->UniformMatrix4fv("Model", Walls.Transform());
-		Renderer::Instance.Draw(GL_TRIANGLES, Walls, WriteToShadowMap.get());
-
+			WriteToShadowMap->UniformMatrix4fv("Model", Walls.Transform());
+			Renderer::Instance.Draw(GL_TRIANGLES, Walls, WriteToShadowMap.get());
+		}
 		ShadowMap->Unbind();
 
 
-		RenderTarget->Bind(Framebuffer::READ_WRITE);	//========
-
-		Renderer::Instance.Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		RenderTarget->Bind(Framebuffer::READ_WRITE);
+		{
+			Renderer::Instance.Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-		Renderer::Instance.Draw(GL_TRIANGLES, Suzanne, SuzanneShader.get());
-		Renderer::Instance.Draw(GL_TRIANGLES, Walls, WallsShader.get());
-
-		RenderTarget->Unbind();							//========
+			Renderer::Instance.Draw(GL_TRIANGLES, Suzanne, SuzanneShader.get());
+			Renderer::Instance.Draw(GL_TRIANGLES, Walls, WallsShader.get());
+		}
+		RenderTarget->Unbind();
 
 		Framebuffer::Blit(RenderTarget.get(), RenderTarget2.get());
 
