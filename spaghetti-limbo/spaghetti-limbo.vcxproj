@@ -190,6 +190,13 @@ XCOPY $(SolutionDir)Dependencies\ASSIMP\lib\assimp-vc143-mt.dll $(OutDir) /y</Co
     <ClCompile Include="Src\Texture.cpp" />
     <ClCompile Include="Src\Utils\glad\glad.c" />
     <ClCompile Include="Src\Utils\glm\detail\glm.cpp" />
+    <ClCompile Include="Src\Utils\imgui\imgui.cpp" />
+    <ClCompile Include="Src\Utils\imgui\imgui_demo.cpp" />
+    <ClCompile Include="Src\Utils\imgui\imgui_draw.cpp" />
+    <ClCompile Include="Src\Utils\imgui\imgui_impl_glfw.cpp" />
+    <ClCompile Include="Src\Utils\imgui\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="Src\Utils\imgui\imgui_tables.cpp" />
+    <ClCompile Include="Src\Utils\imgui\imgui_widgets.cpp" />
     <ClCompile Include="Src\Utils\stb_image\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -487,6 +494,15 @@ XCOPY $(SolutionDir)Dependencies\ASSIMP\lib\assimp-vc143-mt.dll $(OutDir) /y</Co
     <ClInclude Include="Src\Utils\glm\vec3.hpp" />
     <ClInclude Include="Src\Utils\glm\vec4.hpp" />
     <ClInclude Include="Src\Utils\glm\vector_relational.hpp" />
+    <ClInclude Include="Src\Utils\imgui\imconfig.h" />
+    <ClInclude Include="Src\Utils\imgui\imgui.h" />
+    <ClInclude Include="Src\Utils\imgui\imgui_impl_glfw.h" />
+    <ClInclude Include="Src\Utils\imgui\imgui_impl_opengl3.h" />
+    <ClInclude Include="Src\Utils\imgui\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="Src\Utils\imgui\imgui_internal.h" />
+    <ClInclude Include="Src\Utils\imgui\imstb_rectpack.h" />
+    <ClInclude Include="Src\Utils\imgui\imstb_textedit.h" />
+    <ClInclude Include="Src\Utils\imgui\imstb_truetype.h" />
     <ClInclude Include="Src\Utils\stb_image\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
