@@ -13,7 +13,7 @@ int Application::OnStart()
 	glEnable(GL_CULL_FACE); glEnable(GL_DEPTH_TEST);
 	std::unique_ptr<Framebuffer> RenderTarget( Framebuffer::FBOMultisample(0, 0 , m_Width, m_Height, 8) );
 	std::unique_ptr<Framebuffer> RenderTarget2( Framebuffer::FBOIntermediate(1, m_Width, m_Height) );
-	std::unique_ptr<Framebuffer> ShadowMap( Framebuffer::DepthMap(0, 1024, 1024) );
+	std::unique_ptr<Framebuffer> ShadowMap( Framebuffer::DepthMap(2, 1024, 1024) );
 
 
 	Renderer::Instance.InitPostprocess("Res/Shaders/PostprocessVS.glsl", "Res/Shaders/PostprocessFS.glsl");
@@ -31,7 +31,7 @@ int Application::OnStart()
 
 
 
-	glm::mat4 LightPerspective = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 7.5f);
+	glm::mat4 LightPerspective = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.01f, 10.0f);
 	LightPerspective = LightPerspective * glm::lookAt(	PointLight,
 														glm::vec3(0.0f),
 														glm::vec3(0.0f, 1.0f, 0.0f));
@@ -50,6 +50,7 @@ int Application::OnStart()
 		SuzanneShader->UniformMatrix4fv("Projection", Projection);
 		SuzanneShader->UniformMatrix4fv("View", View);
 		SuzanneShader->UniformMatrix4fv("Model", Suzanne.Transform());
+		SuzanneShader->UniformMatrix4fv("LightSpace", LightPerspective);
 		SuzanneShader->Uniform3fv("CamPosition", CamPosition);
 	
 		SuzanneShader->Uniform3fv("Material.Diffuse", SuzanneColor);
@@ -57,9 +58,11 @@ int Application::OnStart()
 		SuzanneShader->Uniform1f("Material.Luster", 64.0f);
 	
 		SuzanneShader->Uniform3fv("Light.Position", PointLight);
-		SuzanneShader->Uniform3fv("Light.Ambient", glm::vec3(0.1f));
+		SuzanneShader->Uniform3fv("Light.Ambient", glm::vec3(1.0f));
 		SuzanneShader->Uniform3fv("Light.Diffuse", glm::vec3(1.0f));
 		SuzanneShader->Uniform3fv("Light.Specular", glm::vec3(1.0f));
+
+		SuzanneShader->Uniform1i("shadowMap", ShadowMap->GetDepth()->Properties().Slot);
 	}
 
 
@@ -72,6 +75,7 @@ int Application::OnStart()
 		WallsShader->UniformMatrix4fv("Projection", Projection);
 		WallsShader->UniformMatrix4fv("View", View);
 		WallsShader->UniformMatrix4fv("Model", Walls.Transform());
+		WallsShader->UniformMatrix4fv("LightSpace", LightPerspective);
 		WallsShader->Uniform3fv("CamPosition", CamPosition);
 
 		WallsShader->Uniform3fv("Material.Diffuse", glm::vec3(1.0f));
@@ -82,6 +86,8 @@ int Application::OnStart()
 		WallsShader->Uniform3fv("Light.Ambient", glm::vec3(0.1f));
 		WallsShader->Uniform3fv("Light.Diffuse", glm::vec3(1.0f));
 		WallsShader->Uniform3fv("Light.Specular", glm::vec3(1.0f));
+
+		WallsShader->Uniform1i("shadowMap", ShadowMap->GetDepth()->Properties().Slot);
 	}
 
 
@@ -94,8 +100,14 @@ int Application::OnStart()
 
 		ShadowMap->Bind(Framebuffer::READ_WRITE);
 		{
+			glViewport( 0,
+						0,
+						ShadowMap->GetDepth()->Properties().Width,
+						ShadowMap->GetDepth()->Properties().Height);
 			Renderer::Instance.Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			
+			glCullFace(GL_FRONT);
+
+
 			WriteToShadowMap->UniformMatrix4fv("Model", Suzanne.Transform());
 			Renderer::Instance.Draw(GL_TRIANGLES, Suzanne, WriteToShadowMap.get());
 		
@@ -107,8 +119,10 @@ int Application::OnStart()
 
 		RenderTarget->Bind(Framebuffer::READ_WRITE);
 		{
+			glViewport(0, 0, m_Width, m_Height);
 			Renderer::Instance.Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		
+			glCullFace(GL_BACK);
+
 			Renderer::Instance.Draw(GL_TRIANGLES, Suzanne, SuzanneShader.get());
 			Renderer::Instance.Draw(GL_TRIANGLES, Walls, WallsShader.get());
 		}

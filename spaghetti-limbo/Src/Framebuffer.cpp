@@ -86,9 +86,9 @@ Framebuffer* Framebuffer::FBOIntermediate(	uint32_t ColorSlot,
 }
 
 
-Framebuffer* Framebuffer::DepthMap(uint32_t DepthSlot,
-							 uint32_t Width,
-							 uint32_t Height)
+Framebuffer* Framebuffer::DepthMap(	uint32_t DepthSlot,
+									uint32_t Width,
+									uint32_t Height)
 {
 	TEXTURE_DESC dDescriptor = { };
 	dDescriptor.Slot			= DepthSlot;
