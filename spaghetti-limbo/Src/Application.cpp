@@ -2,6 +2,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <memory>
 #include <iostream>
+#include <imgui/imgui.h>
+#include <imgui/imgui_impl_glfw.h>
+#include <imgui/imgui_impl_opengl3.h>
 
 #include "Shader.hpp"
 #include "Texture.hpp"
@@ -31,26 +34,27 @@ int Application::OnStart()
 
 
 
-	glm::mat4 LightPerspective = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.01f, 10.0f);
-	LightPerspective = LightPerspective * glm::lookAt(	PointLight,
-														glm::vec3(0.0f),
-														glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 LightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.01f, 10.0f);
+	glm::mat4 LightPerspective = glm::lookAt(PointLight,
+											 glm::vec3(0.0f),
+											 glm::vec3(0.0f, 1.0f, 0.0f));
 
 	std::unique_ptr<Shader> WriteToShadowMap( Shader::CreateVF("Res/Shaders/ShadowMapVS.glsl", "Res/Shaders/ShadowMapFS.glsl") );
 	{
-		WriteToShadowMap->UniformMatrix4fv("LightSpace", LightPerspective);
+		WriteToShadowMap->UniformMatrix4fv("LightSpace", LightProjection * LightPerspective);
 	}
 
 	Model Suzanne("Res/Models/Suzanne/Suzanne.obj");
 	glm::vec3 SuzanneColor = glm::vec3(0.75f, 0.0f, 1.0f);
 	glm::vec3 SuzannePosition = glm::vec3(0.0f);
+	glm::vec3 SuzanneRotation = glm::vec3(0.0f);
 	Suzanne.Transform() = glm::translate(Suzanne.Transform(), SuzannePosition);
 	std::unique_ptr<Shader> SuzanneShader (Shader::CreateVF( "Res/Shaders/DefaultVS.glsl", "Res/Shaders/DefaultFS.glsl" ) );
 	{
 		SuzanneShader->UniformMatrix4fv("Projection", Projection);
 		SuzanneShader->UniformMatrix4fv("View", View);
 		SuzanneShader->UniformMatrix4fv("Model", Suzanne.Transform());
-		SuzanneShader->UniformMatrix4fv("LightSpace", LightPerspective);
+		SuzanneShader->UniformMatrix4fv("LightSpace", LightProjection * LightPerspective);
 		SuzanneShader->Uniform3fv("CamPosition", CamPosition);
 	
 		SuzanneShader->Uniform3fv("Material.Diffuse", SuzanneColor);
@@ -75,7 +79,7 @@ int Application::OnStart()
 		WallsShader->UniformMatrix4fv("Projection", Projection);
 		WallsShader->UniformMatrix4fv("View", View);
 		WallsShader->UniformMatrix4fv("Model", Walls.Transform());
-		WallsShader->UniformMatrix4fv("LightSpace", LightPerspective);
+		WallsShader->UniformMatrix4fv("LightSpace", LightProjection * LightPerspective);
 		WallsShader->Uniform3fv("CamPosition", CamPosition);
 
 		WallsShader->Uniform3fv("Material.Diffuse", glm::vec3(1.0f));
@@ -96,7 +100,8 @@ int Application::OnStart()
 	{
 		Renderer::Instance.Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glfwPollEvents();
-		
+
+		Suzanne.Transform() = glm::translate(glm::mat4(1.0f), SuzannePosition);
 
 		ShadowMap->Bind(Framebuffer::READ_WRITE);
 		{
@@ -106,7 +111,6 @@ int Application::OnStart()
 						ShadowMap->GetDepth()->Properties().Height);
 			Renderer::Instance.Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			glCullFace(GL_FRONT);
-
 
 			WriteToShadowMap->UniformMatrix4fv("Model", Suzanne.Transform());
 			Renderer::Instance.Draw(GL_TRIANGLES, Suzanne, WriteToShadowMap.get());
@@ -123,6 +127,10 @@ int Application::OnStart()
 			Renderer::Instance.Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			glCullFace(GL_BACK);
 
+			SuzanneShader->UniformMatrix4fv("Model", Suzanne.Transform());
+			SuzanneShader->Uniform3fv("Light.Position", PointLight);
+			WallsShader->Uniform3fv("Light.Position", PointLight);
+
 			Renderer::Instance.Draw(GL_TRIANGLES, Suzanne, SuzanneShader.get());
 			Renderer::Instance.Draw(GL_TRIANGLES, Walls, WallsShader.get());
 		}
@@ -130,7 +138,23 @@ int Application::OnStart()
 
 		Framebuffer::Blit(RenderTarget.get(), RenderTarget2.get());
 
+
 		Renderer::Instance.Present();
+		{
+			ImGui_ImplOpenGL3_NewFrame();
+			ImGui_ImplGlfw_NewFrame();
+			ImGui::NewFrame();
+
+			ImGui::Begin("Transform");
+			ImGui::DragFloat3("Position", &SuzannePosition.x, 0.01f, -100, 100);
+			ImGui::End();
+
+			ImGui::Render();
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		}
+
+
+
 		Renderer::Instance.EndFrame(m_Window);
 	}
 
@@ -164,6 +188,17 @@ Application::Application()
 
 	std::cout << glGetString(GL_VERSION) << std::endl
 		<< glGetString(GL_RENDERER) << std::endl;
+
+	{
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+		ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+		ImGui::StyleColorsDark();
+
+		ImGui_ImplGlfw_InitForOpenGL(m_Window, true);
+		ImGui_ImplOpenGL3_Init("#version 460 core");
+	}
 }
 
 Application::~Application()
